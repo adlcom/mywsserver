@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>CHAT</title>
+        
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://coffeefold.com/tpl/site/coffeefold/css/style.css">                		        	
+	</head>
+	<body>
+		<h1>CHAT</h1>        
+        <div class="col-md-12 bg-white list_chat">
+			<input type="text" class="myname">
+            <div class="chat-message">
+                <ul class="chat">
+                
+                </ul>
+            </div>
+        </div>              
+	</body>	
+	
+	<script src="https://code.jquery.com/jquery-3.2.1.js"></script>	
+	<script>
+		var myName = Math.round(Math.random()*1000);
+        $('.myname').val(myName);
+        window.WebSocket = window.WebSocket || window.MozWebSocket;    
+        if(!window.WebSocket){
+        	console.log('Sorry, but your browser doesn\'t support WebSockets.');
+        }
+        
+        var connection = new WebSocket('ws://127.0.0.1:8000');
+        connection.onerror = function(error){
+        	console.log('Sorry, but there\'s some problem with your connection or the server is down');
+        };
+        
+        connection.onclose = function(event){
+        	if(event.wasClean){
+        		console.log('Код: '+event.code+' причина: '+event.reason);
+        	} else {
+        		console.log('Код: '+event.code+' причина: '+event.reason);
+        	}
+        };
+        
+        connection.onopen = function(){
+            if(myName !== false){
+                var msg = JSON.stringify({
+                    "user_send":myName,
+                    "user_from":"All",
+					"msg":""
+                });                
+            	connection.send(msg);
+            }
+        };
+        
+        connection.onmessage = function(message){			
+			var m = JSON.parse(message.data);			
+            console.log(m);
+        };
+	</script>
+</html>	
